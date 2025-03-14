@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example.entity.Account;
 import com.example.exception.BadRequestException;
 import com.example.exception.ConflictException;
+import com.example.exception.UnathorizedException;
 import com.example.repository.AccountRepository;
 
 @Service
@@ -31,12 +32,12 @@ public class AccountService {
     }
 
     // find account by username
-    // public Account findAccountByUsername (String username) {
-    //     Account existingAccount = accountRepository.findByUserName(username);
-    //     return existingAccount;
-    // } 
+    public Account findAccountByUsername (String username) {
+        Account existingAccount = accountRepository.findAccountByUsername(username);
+        return existingAccount;
+    } 
 
-    // save account - register
+    // register account
     public Account registerAccount(Account account) throws BadRequestException, ConflictException {
         System.out.println("Account" + account.toString());
         if (account.getUsername().isBlank() || 
@@ -45,14 +46,24 @@ public class AccountService {
                 throw new BadRequestException("User name must not be empty. Password must be at least 4 characters long");
         }
 
-        // Account existingAccount = findAccountByUsername(account.getUsername());
-        // if (existingAccount != null) {
-        //     throw new ConflictException("Username already in use");
-        // }
+        Account existingAccount = findAccountByUsername(account.getUsername());
+        if (existingAccount != null) {
+            throw new ConflictException("Username already in use");
+        }
         
         return accountRepository.save(account);
     }
 
     // login
-    
+    public Account login(Account account) throws UnathorizedException{
+        Account existingAccount = findAccountByUsername(account.getUsername());
+        if (existingAccount == null) {
+            throw new UnathorizedException("Invalid user name or password");
+        }
+
+        if (existingAccount.getPassword() != account.getPassword()) {
+            throw new UnathorizedException("Invalid user name or password");
+        }
+        return existingAccount;
+    }
 }

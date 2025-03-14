@@ -17,6 +17,7 @@ import com.example.entity.Account;
 import com.example.entity.Message;
 import com.example.exception.BadRequestException;
 import com.example.exception.ConflictException;
+import com.example.exception.UnathorizedException;
 import com.example.service.AccountService;
 
 /**
@@ -34,7 +35,7 @@ public class SocialMediaController {
         this.accountService = accountService;
     }
     // User Registration
-    // POST localhost:8080/register
+    // POST /register
     // success: 200 + user JSON
     // duplicate username: 409
     // invalid user input: 400
@@ -46,12 +47,13 @@ public class SocialMediaController {
     }
 
     // Login
-    // POST localhost:8080/login
+    // POST /login
     // success: 200 + user JSON
     // fail: 401
-    @PostMapping("login")
-    public ResponseEntity<String> login(@RequestBody Account loginCredentials) {
-        return null;
+    @PostMapping("/login")
+    public ResponseEntity<Account> login(@RequestBody Account account) throws UnathorizedException {
+        Account user = accountService.login(account);
+        return ResponseEntity.status(200).body(user);
     }
 
     // Create New Message
@@ -116,7 +118,12 @@ public class SocialMediaController {
 
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<String> handleConflictException(ConflictException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
-        // return ResponseEntity.status(409).body(ex.getMessage());
+        // return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+        return ResponseEntity.status(409).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UnathorizedException.class)
+    public ResponseEntity<String> handleUnathorizedException(UnathorizedException ex) {
+        return ResponseEntity.status(401).body(ex.getMessage());
     }
 }
