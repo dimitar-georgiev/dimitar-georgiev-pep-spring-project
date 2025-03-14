@@ -21,7 +21,7 @@ public class AccountService {
     }
 
     // find account by Id
-    public Account getAccountById(int id) {
+    public Account findAccountById(int id) {
         Optional<Account> optionalAccount = accountRepository.findById(id);
 
         if(optionalAccount.isPresent()) {
@@ -33,7 +33,7 @@ public class AccountService {
 
     // find account by username
     public Account findAccountByUsername (String username) {
-        Account existingAccount = accountRepository.findAccountByUsername(username);
+        Account existingAccount = accountRepository.findByUsername(username);
         return existingAccount;
     } 
 
