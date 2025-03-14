@@ -55,15 +55,20 @@ public class AccountService {
     }
 
     // login
-    public Account login(Account account) throws UnathorizedException{
+    public Account login(Account account) throws UnathorizedException {
         Account existingAccount = findAccountByUsername(account.getUsername());
+        
         if (existingAccount == null) {
             throw new UnathorizedException("Invalid user name or password");
         }
 
-        if (existingAccount.getPassword() != account.getPassword()) {
+        String providedPass = account.getPassword();
+        String retrievedPass = existingAccount.getPassword();
+
+        if (!providedPass.equals(retrievedPass)) {
             throw new UnathorizedException("Invalid user name or password");
         }
+
         return existingAccount;
     }
 }

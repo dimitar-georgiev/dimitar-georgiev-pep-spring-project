@@ -3,7 +3,6 @@ package com.example.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Account;
@@ -47,8 +45,7 @@ public class SocialMediaController {
     
     @PostMapping("/register")
     public ResponseEntity<Account> register(@RequestBody Account newAccount) throws BadRequestException, ConflictException{
-        Account result = accountService.registerAccount(newAccount);
-        return ResponseEntity.status(200).body(result);
+        return ResponseEntity.status(200).body(accountService.registerAccount(newAccount));
     }
 
     // Login
@@ -57,8 +54,7 @@ public class SocialMediaController {
     // fail: 401
     @PostMapping("/login")
     public ResponseEntity<Account> login(@RequestBody Account account) throws UnathorizedException {
-        Account user = accountService.login(account);
-        return ResponseEntity.status(200).body(user);
+        return ResponseEntity.status(200).body(accountService.login(account));
     }
 
     // Create New Message
@@ -77,7 +73,7 @@ public class SocialMediaController {
     // no message: 200 + empty JSON
     @GetMapping("messages")
     public ResponseEntity<List<Message>> getAllMessages() {
-        return null;
+        return ResponseEntity.status(200).body(messageService.getAllMessages());
     }
 
     // Get Message By ID
@@ -86,7 +82,7 @@ public class SocialMediaController {
     // no such message: 200 +  empty body
     @GetMapping("messages/{message_id}")
     public ResponseEntity<Message> getMessageById(@PathVariable String message_id) {
-        return null;
+        return ResponseEntity.status(200).body(messageService.findMessageById(message_id));
     }
 
     // Delete Message By ID
@@ -94,8 +90,8 @@ public class SocialMediaController {
     // success: 200 + number of rows deleted
     // no such message: empty body
     @DeleteMapping("messages/{message_id}")
-    public ResponseEntity<Integer> deleteMessageById (@PathVariable int message_id) {
-        return null;
+    public ResponseEntity<Integer> deleteMessageById (@PathVariable String message_id) {
+        return ResponseEntity.status(200).body(messageService.deleteMessageById(message_id));
     }
 
     // Update Message By ID
@@ -103,8 +99,9 @@ public class SocialMediaController {
     // success: 200 + number of rows affected
     // fail: 400 + empty body
     @PatchMapping("messages/{message_id}")
-    public ResponseEntity<Integer> updateMessageById (@PathVariable int message_id) throws BadRequestException {
-        return null;
+    public ResponseEntity<Integer> updateMessageById (@PathVariable String message_id, @RequestBody Message newMessage) throws BadRequestException {
+        return ResponseEntity.status(200)
+            .body(messageService.updateMessageById(message_id, newMessage));
     }
 
     // Get All Messages By User ID
@@ -112,13 +109,12 @@ public class SocialMediaController {
     // success: 200 + messages JSON
     // no messages: 200 + empty JSON
     @GetMapping("accounts/{account_id}/messages")
-    public ResponseEntity<List<Message>> getAllMessagesByAccountId (@PathVariable int account_id) {
-        return null;
+    public ResponseEntity<List<Message>> getAllMessagesByAccountId (@PathVariable String account_id) {
+        return ResponseEntity.status(200).body(messageService.getAllMessagesByAccountId(account_id));
     }
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<String> handleBadRequestException (BadRequestException ex) {
-        // return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         return ResponseEntity.status(400).body(ex.getMessage());
     }
 
@@ -129,7 +125,6 @@ public class SocialMediaController {
 
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<String> handleConflictException(ConflictException ex) {
-        // return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
         return ResponseEntity.status(409).body(ex.getMessage());
     }
 }
