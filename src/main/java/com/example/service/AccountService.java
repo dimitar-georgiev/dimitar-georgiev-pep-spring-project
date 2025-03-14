@@ -1,8 +1,13 @@
 package com.example.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.entity.Account;
+import com.example.exception.BadRequestException;
+import com.example.exception.ConflictException;
 import com.example.repository.AccountRepository;
 
 @Service
@@ -13,4 +18,41 @@ public class AccountService {
     public AccountService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
     }
+
+    // find account by Id
+    public Account getAccountById(int id) {
+        Optional<Account> optionalAccount = accountRepository.findById(id);
+
+        if(optionalAccount.isPresent()) {
+            return optionalAccount.get();
+        }
+
+        return null;
+    }
+
+    // find account by username
+    // public Account findAccountByUsername (String username) {
+    //     Account existingAccount = accountRepository.findByUserName(username);
+    //     return existingAccount;
+    // } 
+
+    // save account - register
+    public Account registerAccount(Account account) throws BadRequestException, ConflictException {
+        System.out.println("Account" + account.toString());
+        if (account.getUsername().isBlank() || 
+            account.getPassword().isBlank() || 
+            account.getPassword().length() < 4) {
+                throw new BadRequestException("User name must not be empty. Password must be at least 4 characters long");
+        }
+
+        // Account existingAccount = findAccountByUsername(account.getUsername());
+        // if (existingAccount != null) {
+        //     throw new ConflictException("Username already in use");
+        // }
+        
+        return accountRepository.save(account);
+    }
+
+    // login
+    
 }

@@ -1,7 +1,10 @@
 package com.example.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Account;
 import com.example.entity.Message;
+import com.example.exception.BadRequestException;
+import com.example.exception.ConflictException;
+import com.example.service.AccountService;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
@@ -21,14 +27,22 @@ import com.example.entity.Message;
  */
 @RestController
 public class SocialMediaController {
+    AccountService accountService;
+
+    @Autowired
+    public SocialMediaController(AccountService accountService) {
+        this.accountService = accountService;
+    }
     // User Registration
     // POST localhost:8080/register
     // success: 200 + user JSON
     // duplicate username: 409
-    // fail: 400
-    @PostMapping("register")
-    public @ResponseBody Account register(@RequestBody Account newAccount) {
-        return null;
+    // invalid user input: 400
+    
+    @PostMapping("/register")
+    public ResponseEntity<Account> register(@RequestBody Account newAccount) throws BadRequestException, ConflictException{
+        Account result = accountService.registerAccount(newAccount);
+        return ResponseEntity.status(200).body(result);
     }
 
     // Login
@@ -92,5 +106,17 @@ public class SocialMediaController {
     @GetMapping("accounts/{account_id}/messages")
     public Message getAllMessagesByAccountId (@PathVariable int account_id) {
         return null;
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<String> handleBadRequestException (BadRequestException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        // return ResponseEntity.status(400).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<String> handleConflictException(ConflictException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+        // return ResponseEntity.status(409).body(ex.getMessage());
     }
 }
