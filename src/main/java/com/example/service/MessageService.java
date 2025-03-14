@@ -87,7 +87,7 @@ public class MessageService {
     }
 
     // get all messages by account id
-    public List<Message> getAllMessagesByAccountId(String accId) {
-        return messageRepository.findByPostedBy(Integer.parseInt(accId));
+    public List<Message> getAllMessagesByAccountId(String accountId) {
+        return messageRepository.findByPostedBy(Integer.parseInt(accountId));
     }
 }

@@ -43,7 +43,7 @@ public class SocialMediaController {
     // duplicate username: 409
     // invalid user input: 400
     
-    @PostMapping("/register")
+    @PostMapping("register")
     public ResponseEntity<Account> register(@RequestBody Account newAccount) throws BadRequestException, ConflictException{
         return ResponseEntity.status(200).body(accountService.registerAccount(newAccount));
     }
@@ -52,7 +52,7 @@ public class SocialMediaController {
     // POST /login
     // success: 200 + user JSON
     // fail: 401
-    @PostMapping("/login")
+    @PostMapping("login")
     public ResponseEntity<Account> login(@RequestBody Account account) throws UnathorizedException {
         return ResponseEntity.status(200).body(accountService.login(account));
     }
@@ -61,7 +61,7 @@ public class SocialMediaController {
     // POST /messages
     // success: 200 + message JSON
     // fail: 400
-    @PostMapping("/messages")
+    @PostMapping("messages")
     public ResponseEntity<Message> createMessage(@RequestBody Message newMessage) throws BadRequestException {
         Message createdMessage = messageService.createMessage(newMessage);
         return ResponseEntity.status(200).body(createdMessage);
@@ -70,7 +70,7 @@ public class SocialMediaController {
     // Get All Messages
     // GET /messages
     // success: 200 + messages JSON
-    // no message: 200 + empty JSON
+    // no message: 200
     @GetMapping("messages")
     public ResponseEntity<List<Message>> getAllMessages() {
         return ResponseEntity.status(200).body(messageService.getAllMessages());
@@ -79,7 +79,7 @@ public class SocialMediaController {
     // Get Message By ID
     // GET /messages/{message_id}
     // success: 200 + message JSON
-    // no such message: 200 +  empty body
+    // no such message: 200
     @GetMapping("messages/{message_id}")
     public ResponseEntity<Message> getMessageById(@PathVariable String message_id) {
         return ResponseEntity.status(200).body(messageService.findMessageById(message_id));
@@ -88,7 +88,7 @@ public class SocialMediaController {
     // Delete Message By ID
     // DELETE /messages/{message_id}
     // success: 200 + number of rows deleted
-    // no such message: empty body
+    // no such message: 200 + empty body
     @DeleteMapping("messages/{message_id}")
     public ResponseEntity<Integer> deleteMessageById (@PathVariable String message_id) {
         return ResponseEntity.status(200).body(messageService.deleteMessageById(message_id));
@@ -107,7 +107,7 @@ public class SocialMediaController {
     // Get All Messages By User ID
     // GET /accounts/{account_id}/messages
     // success: 200 + messages JSON
-    // no messages: 200 + empty JSON
+    // no messages: 200 + empty body
     @GetMapping("accounts/{account_id}/messages")
     public ResponseEntity<List<Message>> getAllMessagesByAccountId (@PathVariable String account_id) {
         return ResponseEntity.status(200).body(messageService.getAllMessagesByAccountId(account_id));
