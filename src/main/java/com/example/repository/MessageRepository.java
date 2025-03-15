@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.entity.Message;
 
+
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Integer> {
     List<Message> findByPostedBy(Integer postedBy);
